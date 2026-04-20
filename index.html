@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>词语闯关大冒险 🍭</title>
+
+<style>
+:root {
+    --primary-pink: #ffb6c1;
+    --primary-blue: #87cefa;
+    --accent-orange: #fca311;
+    --accent-purple: #9b5de5;
+    --text-color: #5d4037;
+    --card-bg: rgba(255, 255, 255, 0.95);
+}
+
+body {
+    margin: 0;
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(-45deg, #ffc3a0, #ffafbd, #a1c4fd, #c2e9fb);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 小 Logo 样式 */
+.logo {
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 4px 12px;
+    border-radius: 15px;
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #a18cd1;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+}
+
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    width: 90%;
+    max-width: 500px;
+    padding: 30px 35px;
+    border-radius: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 8px solid #ffffff;
+    position: relative;
+    z-index: 1;
+}
+
+.bg-decor {
+    position: absolute;
+    font-size: 100px;
+    opacity: 0.08;
+    z-index: -1;
+    pointer-events: none;
+}
+
+h2 {
+    font-size: 28px;
+    margin: 10px 0 20px 0;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+    -webkit-background-clip: text;
+    color: transparent;
+    font-weight: bold;
+}
+
+#menu {
+    padding: 20px 10px;
+    border-radius: 25px;
+    border: 3px dashed var(--primary-pink);
+    background: rgba(255, 245, 245, 0.8);
+}
+
+#menu p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 35px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px auto;
+}
+
+button:hover {
+    transform: scale(1.05) translateY(-3px);
+}
+
+button:active { transform: scale(0.95); }
+
+.levelBtn { width: 80%; font-size: 20px; }
+.levelBtn:nth-child(2) { background: linear-gradient(135deg, #ff7f50, #ff6b6b); }
+.levelBtn:nth-child(3) { background: linear-gradient(135deg, #3a86ff, #00bbf9); }
+.levelBtn:nth-child(4) { background: linear-gradient(135deg, #06d6a0, #4ecdc4); }
+.levelBtn:nth-child(5) { background: linear-gradient(135deg, #ffd166, #fca311); }
+.levelBtn:nth-child(6) { background: linear-gradient(135deg, #8338ec, #9b5de5); }
+
+#startBtn { 
+    background: linear-gradient(135deg, #ff416c, #ff4b2b); 
+    font-size: 28px; 
+    width: 100%; 
+    padding: 20px;
+    margin: 20px 0;
+}
+
+#hintBtn { background: #ffd93d; color: #5d4037; }
+#nextBtn { background: var(--accent-purple); }
+#homeBtn { background: #b0bec5; font-size: 16px; margin-top: 30px; width: 60%; }
+
+#word {
+    font-size: 88px;
+    font-weight: bold;
+    color: #444;
+    margin: 15px 0;
+    text-shadow: 3px 3px 0px #eee;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#pinyin {
+    font-size: 26px;
+    color: var(--accent-orange);
+    height: 35px;
+    font-family: "Comic Sans MS", cursive;
+    font-weight: bold;
+}
+
+#status {
+    background: #fff5f5;
+    padding: 12px;
+    border-radius: 20px;
+    margin: 10px 0;
+    color: #ff7675;
+    font-weight: bold;
+    border: 2px dashed var(--primary-pink);
+}
+
+#score {
+    font-size: 20px;
+    color: #fab1a0;
+    background: #fff;
+    padding: 8px 20px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 1px solid #f8d7da;
+}
+
+#emoji {
+    font-size: 80px;
+    position: absolute;
+    top: 40%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.snow {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(800px) rotate(360deg); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="logo">🍎 常老师华文小课堂</div>
+    
+    <div class="bg-decor" style="top:-10px; left:-10px;">⭐</div>
+    <div class="bg-decor" style="bottom:-10px; right:-10px;">🐾</div>
+
+    <h2>✨ 词语闯关大冒险 ✨</h2>
+
+    <div id="menu">
+        <p>请选择关卡：</p>
+        <button class="levelBtn" onclick="selectLevel(1)">第一关</button>
+        <button class="levelBtn" onclick="selectLevel(2)">第二关</button>
+        <button class="levelBtn" onclick="selectLevel(3)">第三关</button>
+        <button class="levelBtn" onclick="selectLevel(4)">第四关</button>
+        <button class="levelBtn" onclick="selectLevel(5)">第五关</button>
+    </div>
+
+    <div id="game" style="display:none;">
+        <div id="score">⭐ 能量值：0</div>
+        <div id="status">准备好了吗？</div>
+
+        <div id="word">Ready</div>
+        <div id="pinyin"></div>
+
+        <div id="emoji"></div>
+        <div class="snow" id="snow"></div>
+
+        <button id="startBtn" onclick="start()">🚀 开始</button>
+        
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button id="hintBtn" onclick="hint()" style="display:none;">💡 拼音提示</button>
+            <button id="nextBtn" onclick="next()" style="display:none;">下一题 🐾</button>
+        </div>
+
+        <button id="homeBtn" onclick="home()">🏠 回到关卡</button>
+    </div>
+</div>
+
+<script>
+/* ======================
+📚 词库
+===================== */
+const allWords=[
+    {han:"日月",py:"rì yuè"}, {han:"天地",py:"tiān dì"}, {han:"大风",py:"dà fēng"},
+    {han:"打雷",py:"dǎ léi"}, {han:"白云",py:"bái yún"}, {han:"太阳",py:"tài yáng"},
+    {han:"老师",py:"lǎo shī"}, {han:"苹果",py:"píng guǒ"}, {han:"快乐",py:"kuài lè"},
+    {han:"开门",py:"kāi mén"}, {han:"火车",py:"huǒ chē"}, {han:"花朵",py:"huā duǒ"},
+    {han:"叶子",py:"yè zi"}, {han:"妹妹",py:"mèi mei"}, {han:"看见",py:"kàn jiàn"},
+    {han:"身体",py:"shēn tǐ"}, {han:"虫子",py:"chóng zi"}, {han:"贝壳",py:"bèi ké"},
+    {han:"今天",py:"jīn tiān"}, {han:"什么",py:"shén me"}, {han:"华文",py:"huá wén"},
+    {han:"说华语",py:"shuō huá yǔ"}
+];
+
+let level=1; let words=[]; let index=0; let score=0; let rec; let audioCtx;
+
+function home(){
+    document.getElementById("menu").style.display="block";
+    document.getElementById("game").style.display="none";
+    level=1; index=0; score=0; words=[];
+    document.getElementById("score").innerHTML="⭐ 能量值：0";
+    document.getElementById("status").innerHTML="请选择关卡：";
+    document.getElementById("word").innerHTML="Ready";
+    document.getElementById("pinyin").innerHTML="";
+    document.getElementById("startBtn").style.display="flex";
+}
+
+function shuffle(arr){
+    let a=[...arr];
+    for(let i=a.length-1;i>0;i--){
+        let j=Math.floor(Math.random()* (i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+}
+
+function size(lv){ return 15+(lv-1)*10; }
+
+function selectLevel(lv){
+    level=lv;
+    words=shuffle(allWords).slice(0,size(lv));
+    index=0;
+    document.getElementById("menu").style.display="none";
+    document.getElementById("game").style.display="block";
+    document.getElementById("status").innerHTML="第 "+lv+" 关挑战开始！";
+}
+
+function start(){
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR) { alert("浏览器不支持语音识别哦！"); return; }
+    rec=new SR();
+    rec.lang="zh-CN";
+    rec.continuous=true;
+    rec.onresult=e=>{
+        let say=e.results[e.results.length-1][0].transcript.replace(/\s/g,'');
+        let target=words[index].han;
+        if(say.includes(target)){ correct(); }else{ wrong(); }
+    };
+    rec.start();
+    show();
+    document.getElementById("startBtn").style.display="none";
+}
+
+function correct(){
+    sound(true);
+    score+=5;
+    document.getElementById("score").innerHTML="⭐ 能量值："+score;
+    document.getElementById("status").innerHTML="🌈 太棒了！读对了！";
+    document.getElementById("pinyin").innerText=words[index].py;
+    showEmoji("🎈");
+    confetti();
+    document.getElementById("nextBtn").style.display="flex";
+}
+
+function wrong(){
+    sound(false);
+    document.getElementById("status").innerHTML="🍬 没听清，再读一次嘛";
+    showEmoji("🐣");
+}
+
+function next(){
+    index++;
+    if(index>=words.length){
+        document.getElementById("word").innerHTML="🎉 闯关成功";
+        document.getElementById("status").innerHTML="你真棒！总分："+score;
+        document.getElementById("nextBtn").style.display="none";
+        document.getElementById("hintBtn").style.display="none";
+        return;
+    }
+    show();
+}
+
+function show(){
+    document.getElementById("word").innerText=words[index].han;
+    document.getElementById("status").innerHTML="请大声朗读 📣";
+    document.getElementById("pinyin").innerText="";
+    document.getElementById("hintBtn").style.display="flex";
+    document.getElementById("nextBtn").style.display="none";
+}
+
+function hint(){ document.getElementById("pinyin").innerText=words[index].py; }
+
+function sound(ok){
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    if(ok){
+        playNote(523.25, now, 0.1, "sine");
+        playNote(659.25, now + 0.1, 0.1, "sine");
+        playNote(783.99, now + 0.2, 0.2, "sine");
+    }else{
+        // 明显的“Uh-oh”提示音
+        playNote(220, now, 0.12, "square");
+        playNote(174.61, now + 0.15, 0.3, "square");
+    }
+}
+
+function playNote(freq, time, duration, type) {
+    let o = audioCtx.createOscillator();
+    let g = audioCtx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, time);
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(0.25, time);
+    g.gain.exponentialRampToValueAtTime(0.01, time + duration);
+    o.start(time);
+    o.stop(time + duration);
+}
+
+function showEmoji(t){
+    const el = document.getElementById("emoji");
+    el.innerHTML=t;
+    setTimeout(() => { el.innerHTML=""; }, 800);
+}
+
+function confetti(){
+    let box=document.getElementById("snow");
+    const icons = ["🌸", "⭐", "✨", "🍭", "🎈"];
+    for(let i=0;i<25;i++){
+        let d=document.createElement("div");
+        d.innerHTML= icons[Math.floor(Math.random()*icons.length)];
+        d.style.position="absolute";
+        d.style.left=Math.random()*100+"%";
+        d.style.top="-50px";
+        d.style.fontSize=Math.random()*20+20+"px";
+        d.style.animation=`fall ${Math.random()*2+1}s linear forwards`;
+        box.appendChild(d);
+        setTimeout(()=>d.remove(),2000);
+    }
+}
+</script>
+
+</body>
+</html>
